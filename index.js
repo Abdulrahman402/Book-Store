@@ -1,3 +1,5 @@
+const config = require("config");
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const app = express();
 const winston = require("winston");
@@ -9,6 +11,11 @@ mongoose
   .connect("mongodb://abdo00:node2314@ds245018.mlab.com:45018/book-store-dev")
   .then(() => console.log("Connected to Book-Store DB"))
   .catch(err => console.log("Error while connecting DB", err));
+
+if (!config.get("jwtPrivateKey")) {
+  console.error("jwtPrivateKey not defined");
+  process.exit(1);
+}
 
 const port = process.env.PORT || 4000;
 

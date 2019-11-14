@@ -19,6 +19,8 @@ router.post("/", async (req, res) => {
 
   await user.save();
 
+  user.generateAuthToken();
+
   res.send(_.pick(user, ["name", "email"]));
 });
 
