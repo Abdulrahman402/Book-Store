@@ -12,7 +12,7 @@ const bookSchema = new Schema({
     type: String,
     required: true
   },
-  puplished: Number,
+  puplished: String,
   pages: Number,
   language: String
 });
@@ -23,7 +23,7 @@ function validateBook(book) {
   const schema = {
     name: joi.string().required(),
     author: joi.string().required(),
-    puplished: joi.number().required(),
+    puplished: joi.string().required(),
     pages: joi.number().required(),
     language: joi.string().required()
   };
