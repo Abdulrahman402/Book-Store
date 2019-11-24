@@ -14,7 +14,8 @@ router.get("/", async (req, res) => {
 
 // Getting the current user
 router.get("/me", auth, async (req, res) => {
-  res.send(req.user);
+  const user = await User.findById(req.user._id).select("-password");
+  res.send(user);
 });
 
 // Find a particular user

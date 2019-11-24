@@ -3,6 +3,7 @@ const joi = require("joi");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("config");
+const dev = require("../Config/dev");
 
 const Schema = mongoose.Schema;
 
@@ -22,7 +23,7 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.generateAuthToken = async function() {
-  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+  const token = jwt.sign({ _id: this._id }, dev.tokenSecretKey);
   console.log(token);
   return token;
 };
