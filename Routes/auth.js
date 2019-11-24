@@ -4,6 +4,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const { User } = require("../Models/User");
 
+// Logging in
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -14,7 +15,7 @@ router.post("/", async (req, res) => {
   const validPW = await bcrypt.compare(req.body.password, user.password);
   if (!validPW) return res.status(400).send("Invalid email or password");
 
-  user.generateAuthToken();
+  await user.generateAuthToken();
 
   res.send("You logged in");
 });

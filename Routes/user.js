@@ -1,10 +1,31 @@
 const express = require("express");
 const app = express();
-const { validateUser, User } = require("../Models/User");
+const { validateUser, updateUser, User } = require("../Models/User");
+const auth = require("../Middelware/auth");
 const router = express.Router();
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
+// Getting all users
+router.get("/", async (req, res) => {
+  const user = await User.find();
+  res.send(user);
+});
+
+// Getting the current user
+router.get("/me", auth, async (req, res) => {
+  res.send(req.user);
+});
+
+// Find a particular user
+router.get("/:id", async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (!user) return res.status(400).send("User with given ID not found");
+  res.send(user);
+});
+
+// Registering user
 router.post("/", async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -17,11 +38,57 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
 
+  await user.generateAuthToken();
+
   await user.save();
 
-  const token = user.generateAuthToken();
+  res.send(_.pick(user, "email", "name"));
+});
 
-  res.send(token);
+router.post("/logout", auth, async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter(token => {
+      return token.token !== req.token;
+    });
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send();
+  }
+});
+
+//Change name
+router.put("/name/:id", async (req, res) => {
+  const { error } = updateUser(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { $set: { name: req.body.name } },
+    { new: true }
+  );
+
+  if (!user) return res.status(400).send("The user with given ID not found");
+
+  res.send(_.pick(user, "email", "name"));
+});
+
+// Change password
+router.put("/password/:id", async (req, res) => {
+  const { error } = updateUser(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { password: req.body.password },
+    { new: true }
+  );
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+
+  await user.save();
+
+  res.send(_.pick(user, "email", "name"));
 });
 
 module.exports = router;
