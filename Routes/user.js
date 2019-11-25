@@ -39,11 +39,11 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
 
-  await user.generateAuthToken();
+  const token = await user.generateAuthToken();
 
   await user.save();
 
-  res.send(_.pick(user, "email", "name"));
+  res.header("x-auth-token", token).send(_.pick(user, "email", "name"));
 });
 
 router.post("/logout", auth, async (req, res) => {
@@ -59,7 +59,7 @@ router.post("/logout", auth, async (req, res) => {
 });
 
 //Change name
-router.put("/name/:id", async (req, res) => {
+router.put("/name", auth, async (req, res) => {
   const { error } = updateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -75,7 +75,7 @@ router.put("/name/:id", async (req, res) => {
 });
 
 // Change password
-router.put("/password/:id", async (req, res) => {
+router.put("/password", auth, async (req, res) => {
   const { error } = updateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -91,5 +91,7 @@ router.put("/password/:id", async (req, res) => {
 
   res.send(_.pick(user, "email", "name"));
 });
+
+router.post("/fav", auth);
 
 module.exports = router;
