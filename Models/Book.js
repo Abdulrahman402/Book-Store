@@ -32,3 +32,4 @@ function validateBook(book) {
 
 module.exports.Book = Book;
 module.exports.validateBook = validateBook;
+module.exports.bookSchema = bookSchema;

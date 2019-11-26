@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 const joi = require("joi");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const config = require("config");
 const dev = require("../Config/dev");
+const { bookSchema } = require("../Models/Book");
 
 const Schema = mongoose.Schema;
 
@@ -19,12 +18,14 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  readList: [bookSchema],
+  favList: [bookSchema]
 });
 
 userSchema.methods.generateAuthToken = async function() {
   const token = jwt.sign({ _id: this._id }, dev.tokenSecretKey, {
-    expiresIn: "2 days"
+    expiresIn: "365 days"
   });
   console.log(token);
   return token;
