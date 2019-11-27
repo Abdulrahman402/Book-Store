@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   const query = req.query.search;
 
   const book = await Book.find({
-    title: { $regex: query, $options: "i" }
+    name: { $regex: query, $options: "i" }
   })
     .limit(perPage)
     .skip((page - 1) * perPage);
