@@ -1,5 +1,4 @@
-const config = require("config");
-const jwt = require("jsonwebtoken");
+require("express-async-errors");
 const express = require("express");
 const app = express();
 const winston = require("winston");

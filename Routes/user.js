@@ -1,5 +1,4 @@
 const express = require("express");
-const app = express();
 const { validateUser, updateUser, User } = require("../Models/User");
 const auth = require("../Middelware/auth");
 const router = express.Router();
@@ -8,7 +7,7 @@ const bcrypt = require("bcrypt");
 
 // Getting all users
 router.get("/", async (req, res) => {
-  const user = await User.find();
+  const user = await User.find().select("-password");
   res.send(user);
 });
 
@@ -19,8 +18,8 @@ router.get("/me", auth, async (req, res) => {
 });
 
 // Find a particular user
-router.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id);
+router.get("/:id", auth, async (req, res) => {
+  const user = await User.findById(req.params.id).select("-password");
 
   if (!user) return res.status(400).send("User with given ID not found");
   res.send(user);
@@ -79,7 +78,5 @@ router.put("/password", auth, async (req, res) => {
 
   res.send(_.pick(user, "email", "name"));
 });
-
-router.post("/fav", auth);
 
 module.exports = router;

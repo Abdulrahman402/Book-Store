@@ -1,10 +1,11 @@
 const express = require("express");
 const _ = require("lodash");
 const router = express.Router();
-const { Book, validateBook } = require("../Models/Book");
+const { Book } = require("../Models/Book");
 const auth = require("../Middelware/auth");
 const { User } = require("../Models/User");
 
+// Getting all books
 router.get("/", async (req, res) => {
   const page = req.query.page;
   const perPage = 20;
@@ -19,12 +20,14 @@ router.get("/", async (req, res) => {
   res.send(book);
 });
 
+// Getting a particular book
 router.get("/:id", async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).send("Book is not found");
   res.send(book);
 });
 
+// Add book was read to read list
 router.post("/readList/:id", auth, async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).send("Book was not found");
@@ -44,6 +47,7 @@ router.post("/readList/:id", auth, async (req, res) => {
   res.send(_.pick(user, "email", "name", "readList", "favList"));
 });
 
+// Add favourite books to favourite list
 router.post("/favList/:id", auth, async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).send("Book was not found");
@@ -62,6 +66,7 @@ router.post("/favList/:id", auth, async (req, res) => {
   res.send(_.pick(user, "email", "name", "readList", "favList"));
 });
 
+// Add book being read at the moment
 router.post("/inReadingList/:id", auth, async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).send("Book was not found");
