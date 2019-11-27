@@ -20,7 +20,8 @@ const userSchema = new Schema({
     required: true
   },
   readList: [bookSchema],
-  favList: [bookSchema]
+  favList: [bookSchema],
+  inReadingList: [bookSchema]
 });
 
 userSchema.methods.generateAuthToken = async function() {

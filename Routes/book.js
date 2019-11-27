@@ -6,7 +6,16 @@ const auth = require("../Middelware/auth");
 const { User } = require("../Models/User");
 
 router.get("/", async (req, res) => {
-  const book = await Book.find();
+  const page = req.query.page;
+  const perPage = 20;
+  const query = req.query.search;
+
+  const book = await Book.find({
+    title: { $regex: query, $options: "i" }
+  })
+    .limit(perPage)
+    .skip((page - 1) * perPage);
+
   res.send(book);
 });
 
@@ -16,41 +25,19 @@ router.get("/:id", async (req, res) => {
   res.send(book);
 });
 
-router.post("/", async (req, res) => {
-  const { error } = validateBook(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  let book = new Book({
-    name: req.body.name,
-    author: req.body.author,
-    published: req.body.published,
-    pages: req.body.pages,
-    language: req.body.language
-  });
-  book = await book.save();
-  res.send(book);
-});
-
 router.post("/readList/:id", auth, async (req, res) => {
   const book = await Book.findById(req.params.id);
   if (!book) return res.status(404).send("Book was not found");
 
   const user = await User.findOne({ _id: req.user._id });
 
-  if (user.readList.id(req.params.id)) return res.send("Book already in List");
-
-  user.readList.push(book);
-
-  await user.save();
-
-  res.send(_.pick(user, "email", "name", "readList", "favList"));
-});
-
-router.post("/delRead/:id", auth, async (req, res) => {
-  const user = await User.findById({ _id: req.user._id });
-  const read = user.readList.id(req.params.id);
-
-  read.remove();
+  if (req.body.action === "Add") {
+    if (user.readList.id(req.params.id))
+      return res.send("Book already in List");
+    user.readList.push(book);
+  } else {
+    user.readList.remove(req.params.id);
+  }
 
   await user.save();
 
@@ -63,22 +50,35 @@ router.post("/favList/:id", auth, async (req, res) => {
 
   const user = await User.findOne({ _id: req.user._id });
 
-  if (user.favList.id(req.params.id)) return res.send("Book already in List");
-  user.favList.push(book);
+  if (req.body.action === "Add") {
+    if (user.favList.id(req.params.id)) return res.send("Book already in List");
+    user.favList.push(book);
+  } else {
+    user.favList.remove(req.params.id);
+  }
 
   await user.save();
 
   res.send(_.pick(user, "email", "name", "readList", "favList"));
 });
 
-router.post("/delFav/:id", auth, async (req, res) => {
-  const user = await User.findById({ _id: req.user._id });
-  const fav = user.favList.id(req.params.id);
+router.post("/inReadingList/:id", auth, async (req, res) => {
+  const book = await Book.findById(req.params.id);
+  if (!book) return res.status(404).send("Book was not found");
 
-  fav.remove();
+  const user = await User.findOne({ _id: req.user._id });
 
+  if (req.body.action === "Add") {
+    if (user.inReadingList.id(req.params.id))
+      return res.send("Book already in list");
+    user.inReadingList.push(book);
+  } else {
+    user.inReadingList.remove(req.params.id);
+  }
   await user.save();
-
-  res.send(_.pick(user, "email", "name", "readList", "favList"));
+  res.send(
+    _.pick(user, "email", "name", "readList", "favList", "inReadingList")
+  );
 });
+
 module.exports = router;

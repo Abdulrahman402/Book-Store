@@ -46,18 +46,6 @@ router.post("/", async (req, res) => {
   res.header("x-auth-token", token).send(_.pick(user, "email", "name"));
 });
 
-router.post("/logout", auth, async (req, res) => {
-  try {
-    req.user.tokens = req.user.tokens.filter(token => {
-      return token.token !== req.token;
-    });
-    await req.user.save();
-    res.send();
-  } catch (e) {
-    res.status(500).send();
-  }
-});
-
 //Change name
 router.put("/name", auth, async (req, res) => {
   const { error } = updateUser(req.body);
