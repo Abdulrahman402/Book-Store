@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const joi = require("joi");
 const jwt = require("jsonwebtoken");
-const dev = require("../Config/dev");
+const keys = require("../Config/keys");
 const { bookSchema } = require("../Models/Book");
 
 const Schema = mongoose.Schema;
@@ -25,7 +25,7 @@ const userSchema = new Schema({
 });
 
 userSchema.methods.generateAuthToken = async function() {
-  const token = jwt.sign({ _id: this._id }, dev.tokenSecretKey, {
+  const token = jwt.sign({ _id: this._id }, keys.tokenSecretKey, {
     expiresIn: "365 days"
   });
 

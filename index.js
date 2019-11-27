@@ -6,9 +6,10 @@ const mongoose = require("mongoose");
 const user = require("./Routes/user");
 const auth = require("./Routes/auth");
 const book = require("./Routes/book");
+const keys = require("./Config/keys");
 
 mongoose
-  .connect("mongodb://abdo00:node2314@ds245018.mlab.com:45018/book-store-dev")
+  .connect(keys.mongoURI)
   .then(() => console.log("Connected to Book-Store DB"))
   .catch(err => console.log("Error while connecting DB", err));
 

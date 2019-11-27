@@ -5,12 +5,6 @@ const router = express.Router();
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 
-// Getting all users
-router.get("/", async (req, res) => {
-  const user = await User.find().select("-password");
-  res.send(user);
-});
-
 // Getting the current user
 router.get("/me", auth, async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
@@ -26,7 +20,7 @@ router.get("/:id", auth, async (req, res) => {
 });
 
 // Registering user
-router.post("/", async (req, res) => {
+router.post("/SignUp", async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -45,7 +39,7 @@ router.post("/", async (req, res) => {
   res.header("x-auth-token", token).send(_.pick(user, "email", "name"));
 });
 
-//Change name
+// Change name
 router.put("/name", auth, async (req, res) => {
   const { error } = updateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
