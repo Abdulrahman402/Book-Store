@@ -19,6 +19,9 @@ const server = app.listen(port, () => {
   winston.info(`Listening on port ${port}`);
 });
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 app.use(express.json());
 app.use("/api/users", user);
 app.use("/api/auth", auth);
