@@ -7,6 +7,7 @@ const user = require("./Routes/user");
 const auth = require("./Routes/auth");
 const book = require("./Routes/book");
 const keys = require("./Config/keys");
+const cors = require("cors");
 
 mongoose
   .connect(keys.mongoURI)
