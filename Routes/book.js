@@ -4,16 +4,19 @@ const router = express.Router();
 const { Book } = require("../Models/Book");
 const auth = require("../Middelware/auth");
 const { User } = require("../Models/User");
+require("mongoose-regex-search");
 
 // Getting all books
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   const page = req.query.page;
   const perPage = 20;
   const query = req.query.search;
 
+  // search for a book
   const book = await Book.find({
-    name: { $regex: query, $options: "i" }
+    title: { $regex: query, $options: "i" }
   })
+    // pagination
     .limit(perPage)
     .skip((page - 1) * perPage);
 
@@ -44,7 +47,14 @@ router.post("/readList/:id", auth, async (req, res) => {
 
   await user.save();
 
-  res.send(_.pick(user, "email", "name", "readList", "favList"));
+  res.send(_.pick(user, "email", "name"));
+});
+
+router.get("/getRead", auth, async (req, res) => {
+  const user = await User.findOne({ _id: req.user._id });
+  const readBook = await user.readList.find();
+
+  res.send(readBook);
 });
 
 // Add favourite books to favourite list

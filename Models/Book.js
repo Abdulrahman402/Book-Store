@@ -4,17 +4,18 @@ const joi = require("joi");
 const Schema = mongoose.Schema;
 
 const bookSchema = new Schema({
-  name: {
+  title: {
     type: String,
     required: true
   },
-  author: {
+  subtitle: {
     type: String,
     required: true
   },
-  puplished: String,
-  pages: Number,
-  language: String
+  isbn13: String,
+  image: String,
+  url: String,
+  price: Number
 });
 
 const Book = mongoose.model("Book", bookSchema);

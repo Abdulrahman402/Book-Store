@@ -3,7 +3,7 @@ const { validateUser, updateUser, User } = require("../Models/User");
 const auth = require("../Middelware/auth");
 const router = express.Router();
 const _ = require("lodash");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 // Getting the current user
 router.get("/me", auth, async (req, res) => {

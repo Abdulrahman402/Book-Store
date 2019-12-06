@@ -17,7 +17,7 @@ router.post("/logIn", async (req, res) => {
 
   const token = await user.generateAuthToken();
 
-  res.header("x-auth-token", token).send("You logged in");
+  res.header("x-auth-token", token).send(_.pick(user, "email", "name"));
 });
 
 function validate(req) {
