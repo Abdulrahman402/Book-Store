@@ -23,6 +23,12 @@ const server = app.listen(port, () => {
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+const corsOptions = {
+  exposedHeaders: "x-auth-token"
+};
+
+app.use(cors(corsOptions));
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", user);
