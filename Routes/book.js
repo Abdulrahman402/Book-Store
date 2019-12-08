@@ -12,6 +12,11 @@ router.get("/all", async (req, res) => {
   const perPage = 20;
   const query = req.query.search;
 
+  if (!page && !query) {
+    const allBooks = await User.find();
+    res.send(allBooks);
+  }
+
   const count = await Book.find({
     title: { $regex: query, $options: "i" }
   }).count();
