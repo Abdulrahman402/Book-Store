@@ -55,9 +55,9 @@ router.post("/readList/:id", auth, async (req, res) => {
   res.send(_.pick(user, "email", "name"));
 });
 
-router.get("/", auth, async (req, res) => {
+// getting read list
+router.get("/me/readList", auth, async (req, res) => {
   const user = await User.findById(req.user._id);
-
   res.send(user.readList);
 });
 
@@ -77,7 +77,13 @@ router.post("/favList/:id", auth, async (req, res) => {
 
   await user.save();
 
-  res.send(_.pick(user, "email", "name", "readList", "favList"));
+  res.send(_.pick(user, "email", "name"));
+});
+
+// getting favourite list
+router.get("/me/favList", auth, async (req, res) => {
+  const user = await User.findById(req.user._id);
+  res.send(user.favList);
 });
 
 // Add book being read at the moment
@@ -95,9 +101,13 @@ router.post("/inReadingList/:id", auth, async (req, res) => {
     user.inReadingList.remove(req.params.id);
   }
   await user.save();
-  res.send(
-    _.pick(user, "email", "name", "readList", "favList", "inReadingList")
-  );
+  res.send(_.pick(user, "email", "name"));
+});
+
+// getting in reading list
+router.get("/me/inReadingList", auth, async (req, res) => {
+  const user = await User.findById(req.user._id);
+  res.send(user.inReadingList);
 });
 
 module.exports = router;
