@@ -41,7 +41,11 @@ function validateUser(user) {
       .string()
       .required()
       .email(),
-    password: joi.string().required()
+    password: joi
+      .string()
+      .required()
+      .min(6)
+      .max(12)
   };
   return joi.validate(user, schema);
 }
@@ -49,7 +53,11 @@ function validateUser(user) {
 function updateUser(user) {
   const schema = {
     name: joi.string(),
-    password: joi.string()
+    password: joi.string(),
+    newPW: joi
+      .string()
+      .min(6)
+      .max(12)
   };
   return joi.validate(user, schema);
 }

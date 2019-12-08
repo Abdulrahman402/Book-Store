@@ -3,6 +3,7 @@ const joi = require("joi");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 const { User } = require("../Models/User");
+const _ = require("lodash");
 
 // Logging in
 router.post("/logIn", async (req, res) => {

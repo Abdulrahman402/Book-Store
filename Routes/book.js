@@ -12,15 +12,20 @@ router.get("/all", async (req, res) => {
   const perPage = 20;
   const query = req.query.search;
 
+  const count = await Book.find({
+    title: { $regex: query, $options: "i" }
+  }).count();
+
   // search for a book
   const book = await Book.find({
     title: { $regex: query, $options: "i" }
   })
+
     // pagination
     .limit(perPage)
     .skip((page - 1) * perPage);
 
-  res.send(book);
+  res.send({ book, count });
 });
 
 // Getting a particular book
@@ -50,11 +55,10 @@ router.post("/readList/:id", auth, async (req, res) => {
   res.send(_.pick(user, "email", "name"));
 });
 
-router.get("/getRead", auth, async (req, res) => {
-  const user = await User.findOne({ _id: req.user._id });
-  const readBook = await user.readList.find();
+router.get("/", auth, async (req, res) => {
+  const user = await User.findById(req.user._id);
 
-  res.send(readBook);
+  res.send(user.readList);
 });
 
 // Add favourite books to favourite list

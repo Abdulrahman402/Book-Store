@@ -60,17 +60,22 @@ router.put("/password", auth, async (req, res) => {
   const { error } = updateUser(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    { password: req.body.password },
+  const user = await User.findById(req.user._id);
+  const oldPW = await bcrypt.compare(req.body.password, user.password);
+  if (!oldPW) return res.status(400).send("Invalid old password");
+
+  const newUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { password: req.body.newPW } },
     { new: true }
   );
+
   const salt = await bcrypt.genSalt(10);
-  user.password = await bcrypt.hash(user.password, salt);
+  user.password = await bcrypt.hash(newUser.password, salt);
 
   await user.save();
 
-  res.send(_.pick(user, "email", "name"));
+  res.send(_.pick(newUser, "email", "name"));
 });
 
 module.exports = router;
