@@ -12,10 +12,17 @@ const bookSchema = new Schema({
     type: String,
     required: true
   },
+  puplisher: String,
+  authors: String,
+  page: Number,
+  year: Number,
+  rating: Number,
+  desc: String,
   isbn13: String,
   image: String,
   url: String,
-  price: Number
+  price: Number,
+  language: String
 });
 
 const Book = mongoose.model("Book", bookSchema);
