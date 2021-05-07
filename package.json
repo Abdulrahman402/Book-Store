@@ -38,7 +38,7 @@
     "mongoose-regex-search": "^0.8.8",
     "node_module": "0.0.0",
     "nodemon": "^1.19.4",
-    "underscore": "^1.9.1",
+    "underscore": "^1.12.1",
     "winston": "^3.2.1",
     "winston-mongodb": "^5.0.1"
   }
